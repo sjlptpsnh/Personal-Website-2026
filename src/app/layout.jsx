@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Sujal - UI/UX Designer',
+  title: 'Sujal',
   description: 'Portfolio of Sujal, a data-driven daredevil riding the novelty rollercoaster.',
 };
 
