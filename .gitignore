@@ -36,5 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# backups / old files
+# backups / old files / docs
 /old_version/
+Agent.md
