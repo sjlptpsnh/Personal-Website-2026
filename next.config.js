@@ -10,6 +10,11 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    // Disable webpack cache to prevent AI file-editing from crashing Fast Refresh
+    config.cache = false;
+    return config;
+  },
 };
 
 module.exports = nextConfig;

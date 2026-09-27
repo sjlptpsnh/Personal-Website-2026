@@ -1,5 +1,6 @@
 "use client";
 
+import './globals.css'; // Imported here to prevent Next.js HMR dropping CSS bug
 import { useState } from 'react';
 import FloatingIcons from './FloatingIcons';
 
@@ -7,27 +8,35 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
+    <>
     <div className="container">
       {/* Header */}
       <header className="header">
         <a href="mailto:Sujalpratapsingh70@gmail.com" className="email">
           <i className="ph-light ph-envelope"></i> Email
         </a>
-        <div 
-          className={`menu-btn ${menuOpen ? 'open' : ''}`} 
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
+        <div className={`dropdown-overlay ${menuOpen ? 'active' : ''}`} onClick={() => setMenuOpen(false)}></div>
+        
+        {/* Menu Container to align dropdown with the button */}
+        <div className="menu-container" style={{ position: 'relative' }}>
+          {/* Toggle Button */}
+          <div 
+            className={`menu-btn ${menuOpen ? 'open' : ''}`} 
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          {/* Dropdown Menu Box */}
+          <nav className={`dropdown-menu ${menuOpen ? 'active' : ''}`}>
+            <ul>
+              <li><a href="https://medium.com/@sjlptpsnh" target="_blank" rel="noopener noreferrer">Blog&apos;s</a></li>
+              <li><a href="https://www.linkedin.com/in/sjlptpsnh" target="_blank" rel="noopener noreferrer">Connect</a></li>
+            </ul>
+          </nav>
         </div>
-        <nav className={`dropdown-menu ${menuOpen ? 'active' : ''}`}>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="https://medium.com/@sjlptpsnh" target="_blank" rel="noopener noreferrer">Blog's</a></li>
-            <li><a href="https://www.linkedin.com/in/sjlptpsnh" target="_blank" rel="noopener noreferrer">Connect</a></li>
-          </ul>
-        </nav>
       </header>
 
       {/* Main Content Grid */}
@@ -82,5 +91,6 @@ export default function Home() {
       {/* Random Floating Icons */}
       <FloatingIcons />
     </div>
+    </>
   );
 }

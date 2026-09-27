@@ -6,7 +6,13 @@ import { motion } from 'framer-motion';
 export default function FloatingIcons() {
   const [iconsStyle, setIconsStyle] = useState([]);
 
+  // We use standard React hydration strategy.
+  // The state is empty on server, so we render an empty container.
+  // After hydration on the client, useEffect populates the icons and triggers re-render.
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     // Generate random starting positions on client-side
     const iconsList = [
       '/assets/icons/icon-crypto.png',
@@ -36,48 +42,49 @@ export default function FloatingIcons() {
       '/assets/icons/icon-molecule.png'
     ];
 
-    // Pick 5 random unique icons
     const shuffledIcons = [...iconsList].sort(() => 0.5 - Math.random());
-    const selectedIcons = shuffledIcons.slice(0, 5);
+    const selectedIcons = shuffledIcons.slice(0, 5); // 5 icons as requested
 
-    // Pre-defined regions (quadrants + bottom edges) so they don't overlap initially and STRICTLY avoid the center face
+    // Pre-defined regions (quadrants + edges) keeping well away from the center face
     const regions = [
-      { xMin: 2, xMax: 20, yMin: 5, yMax: 25 },   // Far Top Left
-      { xMin: 80, xMax: 95, yMin: 5, yMax: 25 },  // Far Top Right
-      { xMin: 2, xMax: 15, yMin: 70, yMax: 90 },  // Far Bottom Left
-      { xMin: 85, xMax: 95, yMin: 70, yMax: 90 }, // Far Bottom Right
-      { xMin: 15, xMax: 85, yMin: 85, yMax: 95 }  // Absolute Bottom Edge
+      { xMin: 5, xMax: 20, yMin: 10, yMax: 30 },   // Top Left
+      { xMin: 80, xMax: 95, yMin: 10, yMax: 30 },  // Top Right
+      { xMin: 5, xMax: 15, yMin: 60, yMax: 85 },   // Bottom Left
+      { xMin: 85, xMax: 95, yMin: 60, yMax: 85 },  // Bottom Right
+      { xMin: 20, xMax: 80, yMin: 85, yMax: 95 }   // Bottom Center (below face)
     ];
 
     const generatedStyles = selectedIcons.map((src, i) => {
-      const region = regions[i];
+      const region = regions[i % regions.length];
       const randomX = Math.floor(Math.random() * (region.xMax - region.xMin)) + region.xMin;
       const randomY = Math.floor(Math.random() * (region.yMax - region.yMin)) + region.yMin;
       
-      // Random scale variation: from medium-small (0.5) to medium (1.0)
+      // Random scale variation
       const randomScale = (Math.random() * 0.5) + 0.5;
       
-      // Keep float distance tight so they don't drift back into the center face area
-      const randomFloatX = [(Math.random() * 30) - 15, (Math.random() * 30) - 15, 0];
-      const randomFloatY = [(Math.random() * 30) - 15, (Math.random() * 30) - 15, 0];
-      const randomRotate = [(Math.random() * 180) - 90, (Math.random() * 180) - 90, 0];
+      // Moderate float distance for noticeable but smooth movement
+      const randomFloatX = [(Math.random() * 40) - 20, (Math.random() * 40) - 20, (Math.random() * 40) - 20, 0];
+      const randomFloatY = [(Math.random() * 40) - 20, (Math.random() * 40) - 20, (Math.random() * 40) - 20, 0];
+      const randomRotate = [(Math.random() * 180) - 90, (Math.random() * 180) - 90, (Math.random() * 180) - 90, 0];
       
       return {
         src,
-        left: `${randomX}vw`,
-        top: `${randomY}vh`,
+        left: `${randomX}%`,
+        top: `${randomY}%`,
         scale: randomScale,
         floatX: randomFloatX,
         floatY: randomFloatY,
         rotate: randomRotate,
-        duration: Math.random() * 10 + 10 // Faster duration between 10s and 20s
+        duration: Math.random() * 6 + 9 // Moderate duration between 9s and 15s
       };
     });
 
     setIconsStyle(generatedStyles);
   }, []);
 
-  if (iconsStyle.length === 0) return null;
+  // Ensure the component renders on the server to prevent hydration mismatch,
+  // We render the container immediately so the layout is stable and we can inspect it.
+  if (!mounted || iconsStyle.length === 0) return <div id="random-icons-container"></div>;
 
   return (
     <div id="random-icons-container">
@@ -99,7 +106,7 @@ export default function FloatingIcons() {
           }}
           transition={{
             duration: style.duration,
-            ease: "linear",
+            ease: "easeInOut",
             repeat: Infinity,
             repeatType: "mirror"
           }}
